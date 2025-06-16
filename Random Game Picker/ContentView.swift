@@ -21,6 +21,9 @@ struct ContentView: View {
                 Button(action: {
                     selectedConsole = console
                     randomGame = nil // Reset random selection when switching consoles
+                    searchText = ""
+                    scrollTarget = nil
+                    selectedGame = nil
                 }) {
                     Text(console.name)
                 }
@@ -32,10 +35,9 @@ struct ContentView: View {
             if let console = selectedConsole {
                 VStack {
                     ScrollViewReader { proxy in
-                        List {
-                            ForEach(filteredGames(console: console), id: \.self) { game in
-                                HStack {
-                                    Text(game)
+                        List(filteredGames(console: console), id: \.self) { game in
+                            HStack {
+                                Text(game)
                                         .onTapGesture {
                                             selectedGame = game
                                         }
@@ -60,9 +62,9 @@ struct ContentView: View {
                                 }
                                 .padding(.vertical, 4)
                                 .id(game)
-                            }
                         }
                         .searchable(text: $searchText)
+                        .id(console.id)
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
                                 withAnimation {
