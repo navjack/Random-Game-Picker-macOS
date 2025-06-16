@@ -4,7 +4,6 @@ struct ContentView: View {
     @State private var consoles: [Console] = []
     @State private var selectedConsole: Console?
     @State private var randomGame: String?
-    @State private var globalRandomPick: (console: String, game: String)?
     @State private var newGame: String = ""
     @State private var selectedGame: String?
     @State private var scrollTarget: String?
@@ -36,10 +35,6 @@ struct ContentView: View {
             if let console = selectedConsole {
                 VStack {
                     ScrollViewReader { proxy in
-                        List {
-                            ForEach(console.games, id: \.self) { game in
-                                HStack {
-                                    Text(game)
                         List(filteredGames(console: console), id: \.self) { game in
                             HStack {
                                 Text(game)
@@ -67,7 +62,6 @@ struct ContentView: View {
                                 }
                                 .padding(.vertical, 4)
                                 .id(game)
-                            }
                         }
                         .searchable(text: $searchText)
                         .animation(nil, value: searchText)
@@ -75,11 +69,7 @@ struct ContentView: View {
                             scrollTarget = nil
                             selectedGame = nil
                         }
-                        // Keep a stable identity for the List so the search
-                        // field retains focus while typing. The selection and
-                        // scroll target are cleared on every searchText change
-                        // to avoid index crashes.
-                        .id(console.id)
+                        .id("\(console.id)\(searchText)")
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
                                 withAnimation {
@@ -160,31 +150,18 @@ struct ContentView: View {
     }
 
     private func saveGames(for console: Console) {
-        let fileName = "\(console.name).txt"
-        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(fileName)
         guard let base = baseDirectory() else { return }
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         let fileURL = base.appendingPathComponent("\(console.name).txt")
 
         do {
             let content = console.games.joined(separator: "\n")
-            try content.write(to: fileURL!, atomically: true, encoding: .utf8)
             try content.write(to: fileURL, atomically: true, encoding: .utf8)
         } catch {
             print("Error saving games for \(console.name): \(error)")
         }
     }
 
-    private func pickRandomFromAll() {
-        let allGames = consoles.flatMap { console in
-            console.games.map { (console.name, $0) }
-        }
-        
-        if let randomSelection = allGames.randomElement() {
-            globalRandomPick = randomSelection
-        }
-    }
-    
     // Load console names from text files
     private func loadConsoles() {
         let fileManager = FileManager.default
@@ -208,8 +185,6 @@ struct ContentView: View {
     // Load game list from a text file
     private func loadGames(for fileName: String) -> [String]? {
         let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-        let docURL = documentsURL?.appendingPathComponent(fileName)
         let docURL = baseDirectory()?.appendingPathComponent(fileName)
         // User-edited lists in Documents override bundled defaults.
         if let docPath = docURL?.path, fileManager.fileExists(atPath: docPath) {
@@ -240,8 +215,6 @@ struct ContentView: View {
     
     // Pick a random game
     private func pickRandomGame() {
-        if let games = selectedConsole?.games, !games.isEmpty {
-            randomGame = games.randomElement()
         if let games = selectedConsole?.games, !games.isEmpty, let consoleName = selectedConsole?.name, let pick = games.randomElement() {
             randomGame = pick
             randomHistory.append("\(consoleName): \(pick)")
