@@ -64,6 +64,11 @@ struct ContentView: View {
                                 .id(game)
                         }
                         .searchable(text: $searchText)
+                        .animation(nil, value: searchText)
+                        .onChange(of: searchText) { _, _ in
+                            scrollTarget = nil
+                            selectedGame = nil
+                        }
                         .id(console.id)
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
@@ -226,7 +231,7 @@ struct ContentView: View {
 
     private func loadRandomHistory() {
         guard let url = baseDirectory()?.appendingPathComponent("RandomPickHistory.txt") else { return }
-        if let data = try? String(contentsOf: url) {
+        if let data = try? String(contentsOf: url, encoding: .utf8) {
             randomHistory = data.components(separatedBy: "\n").filter { !$0.isEmpty }
         }
     }
