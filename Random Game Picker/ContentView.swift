@@ -143,6 +143,22 @@ struct ContentView: View {
 
     // Load game list from a text file
     private func loadGames(for fileName: String) -> [String]? {
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
+        let docURL = documentsURL?.appendingPathComponent(fileName)
+        // User-edited lists in Documents override bundled defaults.
+        if let docPath = docURL?.path, fileManager.fileExists(atPath: docPath) {
+            do {
+                let content = try String(contentsOfFile: docPath)
+                return content.components(separatedBy: "\n")
+                    .map { $0.replacingOccurrences(of: ";", with: "").trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+            } catch {
+                print("Error reading file \(fileName) from Documents: \(error)")
+            }
+        }
+
         if let path = Bundle.main.path(forResource: fileName.replacingOccurrences(of: ".txt", with: ""), ofType: "txt") {
             do {
                 let content = try String(contentsOfFile: path)
