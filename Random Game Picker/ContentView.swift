@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var globalRandomPick: (console: String, game: String)?
     @State private var newGame: String = ""
     @State private var selectedGame: String?
+    @State private var scrollTarget: String?
 
     var body: some View {
         NavigationSplitView {
@@ -23,32 +24,42 @@ struct ContentView: View {
         } detail: {
             if let console = selectedConsole {
                 VStack {
-                    List {
-                        ForEach(console.games, id: \.self) { game in
-                            HStack {
-                                Text(game)
-                                    .onTapGesture {
-                                        selectedGame = game
-                                    }
-                                    .background(selectedGame == game ? Color.gray.opacity(0.3) : Color.clear)
-                                
-                                Spacer()
-                                
-                                Button(action: {
-                                    if let index = consoles.firstIndex(where: { $0.id == selectedConsole?.id }) {
-                                        if let gameIndex = consoles[index].games.firstIndex(of: game) {
-                                            consoles[index].games.remove(at: gameIndex)
-                                            saveGames(for: consoles[index]) // Save modifications
-                                            selectedConsole = consoles[index] // Refresh view
+                    ScrollViewReader { proxy in
+                        List {
+                            ForEach(console.games, id: \.self) { game in
+                                HStack {
+                                    Text(game)
+                                        .onTapGesture {
+                                            selectedGame = game
                                         }
+                                        .background(selectedGame == game ? Color.gray.opacity(0.3) : Color.clear)
+
+                                    Spacer()
+
+                                    Button(action: {
+                                        if let index = consoles.firstIndex(where: { $0.id == selectedConsole?.id }) {
+                                            if let gameIndex = consoles[index].games.firstIndex(of: game) {
+                                                consoles[index].games.remove(at: gameIndex)
+                                                saveGames(for: consoles[index]) // Save modifications
+                                                selectedConsole = consoles[index] // Refresh view
+                                            }
+                                        }
+                                    }) {
+                                        Image(systemName: "trash")
+                                            .foregroundColor(.red)
                                     }
-                                }) {
-                                    Image(systemName: "trash")
-                                        .foregroundColor(.red)
+                                    .buttonStyle(BorderlessButtonStyle()) // Ensure button works in List
                                 }
-                                .buttonStyle(BorderlessButtonStyle()) // Ensure button works in List
+                                .padding(.vertical, 4)
+                                .id(game)
                             }
-                            .padding(.vertical, 4)
+                        }
+                        .onChange(of: scrollTarget) { target in
+                            if let target = target {
+                                withAnimation {
+                                    proxy.scrollTo(target, anchor: .center)
+                                }
+                            }
                         }
                     }
                     
@@ -66,14 +77,16 @@ struct ContentView: View {
                         .padding()
                     
                     Button(action: {
-                        if !newGame.trimmingCharacters(in: .whitespaces).isEmpty {
-                            if let index = consoles.firstIndex(where: { $0.id == selectedConsole?.id }) {
-                                consoles[index].games.append(newGame.trimmingCharacters(in: .whitespaces))
-                                consoles[index].games.sort() // Ensure sorting
-                                saveGames(for: consoles[index]) // Save modifications
-                                newGame = "" // Reset input field
-                                selectedConsole = consoles[index] // Refresh view
-                            }
+                        let trimmed = newGame.trimmingCharacters(in: .whitespaces)
+                        guard !trimmed.isEmpty else { return }
+                        if let index = consoles.firstIndex(where: { $0.id == selectedConsole?.id }) {
+                            let insertionIndex = consoles[index].games.firstIndex { trimmed.localizedCaseInsensitiveCompare($0) == .orderedAscending } ?? consoles[index].games.count
+                            consoles[index].games.insert(trimmed, at: insertionIndex)
+                            saveGames(for: consoles[index]) // Save modifications
+                            newGame = "" // Reset input field
+                            selectedConsole = consoles[index] // Refresh view
+                            selectedGame = trimmed
+                            scrollTarget = trimmed
                         }
                     }) {
                         Label("Add Game", systemImage: "plus")
