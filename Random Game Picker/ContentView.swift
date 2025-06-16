@@ -4,10 +4,16 @@ struct ContentView: View {
     @State private var consoles: [Console] = []
     @State private var selectedConsole: Console?
     @State private var randomGame: String?
-    @State private var globalRandomPick: (console: String, game: String)?
     @State private var newGame: String = ""
     @State private var selectedGame: String?
     @State private var scrollTarget: String?
+    @State private var searchText: String = ""
+    @State private var randomHistory: [String] = []
+
+    private func filteredGames(console: Console) -> [String] {
+        if searchText.isEmpty { return console.games }
+        return console.games.filter { $0.localizedCaseInsensitiveContains(searchText) }
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -15,9 +21,13 @@ struct ContentView: View {
                 Button(action: {
                     selectedConsole = console
                     randomGame = nil // Reset random selection when switching consoles
+                    searchText = ""
+                    scrollTarget = nil
+                    selectedGame = nil
                 }) {
                     Text(console.name)
                 }
+                .accessibilityLabel(console.name)
             }
             .navigationTitle("Consoles")
             .onAppear(perform: loadConsoles)
@@ -25,10 +35,9 @@ struct ContentView: View {
             if let console = selectedConsole {
                 VStack {
                     ScrollViewReader { proxy in
-                        List {
-                            ForEach(console.games, id: \.self) { game in
-                                HStack {
-                                    Text(game)
+                        List(filteredGames(console: console), id: \.self) { game in
+                            HStack {
+                                Text(game)
                                         .onTapGesture {
                                             selectedGame = game
                                         }
@@ -48,12 +57,23 @@ struct ContentView: View {
                                         Image(systemName: "trash")
                                             .foregroundColor(.red)
                                     }
+                                    .accessibilityLabel("Delete \(game)")
                                     .buttonStyle(BorderlessButtonStyle()) // Ensure button works in List
                                 }
                                 .padding(.vertical, 4)
                                 .id(game)
-                            }
                         }
+                        .searchable(text: $searchText)
+                        .animation(nil, value: searchText)
+                        .onChange(of: searchText) { _, _ in
+                            scrollTarget = nil
+                            selectedGame = nil
+                        }
+                        // Keep a stable identity for the List so the search
+                        // field retains focus while typing. The selection and
+                        // scroll target are cleared on every searchText change
+                        // to avoid index crashes.
+                        .id(console.id)
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
                                 withAnimation {
@@ -70,10 +90,12 @@ struct ContentView: View {
                     }) {
                         Label("Save Changes", systemImage: "square.and.arrow.down")
                     }
+                    .accessibilityLabel("Save Changes")
                     .padding()
                     
                     TextField("Enter new game", text: $newGame)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .accessibilityLabel("New Game")
                         .padding()
                     
                     Button(action: {
@@ -91,11 +113,13 @@ struct ContentView: View {
                     }) {
                         Label("Add Game", systemImage: "plus")
                     }
+                    .accessibilityLabel("Add Game")
                     .padding()
 
                     Button(action: pickRandomGame) {
                         Label("Pick Random Game", systemImage: "die.face.3")
                     }
+                    .accessibilityLabel("Pick Random Game")
                     .padding()
 
                     if let game = randomGame {
@@ -103,6 +127,17 @@ struct ContentView: View {
                             .font(.headline)
                             .textSelection(.enabled) // Allows copy-pasting
                             .padding()
+                    }
+
+                    if !randomHistory.isEmpty {
+                        VStack(alignment: .leading) {
+                            Text("History")
+                                .font(.headline)
+                            ForEach(randomHistory.suffix(5), id: \.self) { entry in
+                                Text(entry)
+                            }
+                        }
+                        .padding()
                     }
                 }
                 .navigationTitle(console.name)
@@ -113,28 +148,24 @@ struct ContentView: View {
         }
     }
     
+    private func baseDirectory() -> URL? {
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        return documents?.appendingPathComponent("NavJack Software/Random Game Picker/Save Data")
+    }
+
     private func saveGames(for console: Console) {
-        let fileName = "\(console.name).txt"
-        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(fileName)
+        guard let base = baseDirectory() else { return }
+        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        let fileURL = base.appendingPathComponent("\(console.name).txt")
 
         do {
             let content = console.games.joined(separator: "\n")
-            try content.write(to: fileURL!, atomically: true, encoding: .utf8)
+            try content.write(to: fileURL, atomically: true, encoding: .utf8)
         } catch {
             print("Error saving games for \(console.name): \(error)")
         }
     }
 
-    private func pickRandomFromAll() {
-        let allGames = consoles.flatMap { console in
-            console.games.map { (console.name, $0) }
-        }
-        
-        if let randomSelection = allGames.randomElement() {
-            globalRandomPick = randomSelection
-        }
-    }
-    
     // Load console names from text files
     private func loadConsoles() {
         let fileManager = FileManager.default
@@ -149,6 +180,7 @@ struct ContentView: View {
                 let games = loadGames(for: fileName) ?? []
                 return Console(name: consoleName, games: games)
             }.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            loadRandomHistory()
         } catch {
             print("Error loading consoles: \(error)")
         }
@@ -157,8 +189,7 @@ struct ContentView: View {
     // Load game list from a text file
     private func loadGames(for fileName: String) -> [String]? {
         let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-        let docURL = documentsURL?.appendingPathComponent(fileName)
+        let docURL = baseDirectory()?.appendingPathComponent(fileName)
         // User-edited lists in Documents override bundled defaults.
         if let docPath = docURL?.path, fileManager.fileExists(atPath: docPath) {
             do {
@@ -188,8 +219,24 @@ struct ContentView: View {
     
     // Pick a random game
     private func pickRandomGame() {
-        if let games = selectedConsole?.games, !games.isEmpty {
-            randomGame = games.randomElement()
+        if let games = selectedConsole?.games, !games.isEmpty, let consoleName = selectedConsole?.name, let pick = games.randomElement() {
+            randomGame = pick
+            randomHistory.append("\(consoleName): \(pick)")
+            saveRandomHistory()
+        }
+    }
+
+    private func saveRandomHistory() {
+        guard let url = baseDirectory()?.appendingPathComponent("RandomPickHistory.txt") else { return }
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let content = randomHistory.joined(separator: "\n")
+        try? content.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    private func loadRandomHistory() {
+        guard let url = baseDirectory()?.appendingPathComponent("RandomPickHistory.txt") else { return }
+        if let data = try? String(contentsOf: url, encoding: .utf8) {
+            randomHistory = data.components(separatedBy: "\n").filter { !$0.isEmpty }
         }
     }
 }
