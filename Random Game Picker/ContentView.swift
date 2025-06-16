@@ -162,7 +162,7 @@ struct ContentView: View {
         // User-edited lists in Documents override bundled defaults.
         if let docPath = docURL?.path, fileManager.fileExists(atPath: docPath) {
             do {
-                let content = try String(contentsOfFile: docPath)
+                let content = try String(contentsOfFile: docPath, encoding: .utf8)
                 return content.components(separatedBy: "\n")
                     .map { $0.replacingOccurrences(of: ";", with: "").trimmingCharacters(in: .whitespacesAndNewlines) }
                     .filter { !$0.isEmpty }
