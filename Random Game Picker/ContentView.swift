@@ -69,7 +69,11 @@ struct ContentView: View {
                             scrollTarget = nil
                             selectedGame = nil
                         }
-                        .id("\(console.id)\(searchText)")
+                        // Keep a stable identity for the list so the search
+                        // field retains focus while typing. The selection and
+                        // scroll target are cleared on every searchText change
+                        // to avoid index crashes.
+                        .id(console.id)
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
                                 withAnimation {
