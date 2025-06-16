@@ -54,8 +54,8 @@ struct ContentView: View {
                                 .id(game)
                             }
                         }
-                        .onChange(of: scrollTarget) { target in
-                            if let target = target {
+                        .onChange(of: scrollTarget) { newValue, _ in
+                            if let target = newValue {
                                 withAnimation {
                                     proxy.scrollTo(target, anchor: .center)
                                 }
@@ -158,7 +158,7 @@ struct ContentView: View {
     private func loadGames(for fileName: String) -> [String]? {
         if let path = Bundle.main.path(forResource: fileName.replacingOccurrences(of: ".txt", with: ""), ofType: "txt") {
             do {
-                let content = try String(contentsOfFile: path)
+                let content = try String(contentsOfFile: path, encoding: .utf8)
                 return content.components(separatedBy: "\n")
                     .map { $0.replacingOccurrences(of: ";", with: "").trimmingCharacters(in: .whitespacesAndNewlines) }
                     .filter { !$0.isEmpty }
