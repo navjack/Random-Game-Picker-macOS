@@ -15,3 +15,6 @@ A simple macOS application built with SwiftUI that helps you randomly select a g
 ## How it Works
 
 The application initially loads console and game data from `.txt` files included within the app bundle (specifically from the `Systems` directory). When you add or remove games, these changes are saved to corresponding `.txt` files in your user's Documents directory, ensuring your customized lists persist across app launches without modifying the original bundled data.
+## License
+
+This project is licensed under the [MIT License](LICENSE).
