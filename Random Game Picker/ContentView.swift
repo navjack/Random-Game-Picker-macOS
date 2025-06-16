@@ -69,7 +69,7 @@ struct ContentView: View {
                             scrollTarget = nil
                             selectedGame = nil
                         }
-                        .id(console.id)
+                        .id("\(console.id)\(searchText)")
                         .onChange(of: scrollTarget) { newValue, _ in
                             if let target = newValue {
                                 withAnimation {
