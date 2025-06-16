@@ -1,0 +1,8 @@
+# macOS/Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+# Build artifacts
+build/
+# OS-specific
+.DS_Store
