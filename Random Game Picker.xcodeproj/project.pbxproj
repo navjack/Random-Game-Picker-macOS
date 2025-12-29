@@ -6,14 +6,35 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2EF3D9002D7B5A00008E00EE /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EF3D9022D7B5A00008E00EE /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2EF3D9012D7B5A00008E00EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2EF3D8082D7B4F3B008E00EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2EF3D80F2D7B4F3B008E00EE;
+			remoteInfo = "Random Game Picker";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2EF3D8102D7B4F3B008E00EE /* Random Game Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Random Game Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EF3D9022D7B5A00008E00EE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		2EF3D9032D7B5A00008E00EE /* Random Game PickerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Random Game PickerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2EF3D8122D7B4F3B008E00EE /* Random Game Picker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Random Game Picker";
+			sourceTree = "<group>";
+		};
+		2EF3D9042D7B5A00008E00EE /* Random Game PickerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Random Game PickerTests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -24,14 +45,30 @@
 			files = (
 			);
 		};
+		2EF3D9052D7B5A00008E00EE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				2EF3D9002D7B5A00008E00EE /* XCTest.framework in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2EE9AD222F02809200C96EFE /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				2EF3D9022D7B5A00008E00EE /* XCTest.framework */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		2EF3D8072D7B4F3B008E00EE = {
 			isa = PBXGroup;
 			children = (
 				2EF3D8122D7B4F3B008E00EE /* Random Game Picker */,
+				2EF3D9042D7B5A00008E00EE /* Random Game PickerTests */,
 				2EF3D8112D7B4F3B008E00EE /* Products */,
+				2EE9AD222F02809200C96EFE /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -39,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				2EF3D8102D7B4F3B008E00EE /* Random Game Picker.app */,
+				2EF3D9032D7B5A00008E00EE /* Random Game PickerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,6 +102,27 @@
 			productReference = 2EF3D8102D7B4F3B008E00EE /* Random Game Picker.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2EF3D9062D7B5A00008E00EE /* Random Game PickerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2EF3D90E2D7B5A00008E00EE /* Build configuration list for PBXNativeTarget "Random Game PickerTests" */;
+			buildPhases = (
+				2EF3D9082D7B5A00008E00EE /* Sources */,
+				2EF3D9052D7B5A00008E00EE /* Frameworks */,
+				2EF3D9072D7B5A00008E00EE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2EF3D9092D7B5A00008E00EE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2EF3D9042D7B5A00008E00EE /* Random Game PickerTests */,
+			);
+			name = "Random Game PickerTests";
+			productName = "Random Game PickerTests";
+			productReference = 2EF3D9032D7B5A00008E00EE /* Random Game PickerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -76,6 +135,10 @@
 				TargetAttributes = {
 					2EF3D80F2D7B4F3B008E00EE = {
 						CreatedOnToolsVersion = 16.3;
+					};
+					2EF3D9062D7B5A00008E00EE = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 2EF3D80F2D7B4F3B008E00EE;
 					};
 				};
 			};
@@ -94,12 +157,18 @@
 			projectRoot = "";
 			targets = (
 				2EF3D80F2D7B4F3B008E00EE /* Random Game Picker */,
+				2EF3D9062D7B5A00008E00EE /* Random Game PickerTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2EF3D80E2D7B4F3B008E00EE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		2EF3D9072D7B5A00008E00EE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -112,7 +181,20 @@
 			files = (
 			);
 		};
+		2EF3D9082D7B5A00008E00EE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2EF3D9092D7B5A00008E00EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2EF3D80F2D7B4F3B008E00EE /* Random Game Picker */;
+			targetProxy = 2EF3D9012D7B5A00008E00EE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2EF3D8322D7B4F3D008E00EE /* Debug configuration for PBXProject "Random Game Picker" */ = {
@@ -305,6 +387,48 @@
 			};
 			name = Release;
 		};
+		2EF3D90C2D7B5A00008E00EE /* Debug configuration for PBXNativeTarget "Random Game PickerTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C6WYC5GVFR;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "navjack.Random-Game-PickerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Random Game Picker.app/Contents/MacOS/Random Game Picker";
+			};
+			name = Debug;
+		};
+		2EF3D90D2D7B5A00008E00EE /* Release configuration for PBXNativeTarget "Random Game PickerTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C6WYC5GVFR;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "navjack.Random-Game-PickerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Random Game Picker.app/Contents/MacOS/Random Game Picker";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -321,6 +445,14 @@
 			buildConfigurations = (
 				2EF3D8352D7B4F3D008E00EE /* Debug configuration for PBXNativeTarget "Random Game Picker" */,
 				2EF3D8362D7B4F3D008E00EE /* Release configuration for PBXNativeTarget "Random Game Picker" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		2EF3D90E2D7B5A00008E00EE /* Build configuration list for PBXNativeTarget "Random Game PickerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2EF3D90C2D7B5A00008E00EE /* Debug configuration for PBXNativeTarget "Random Game PickerTests" */,
+				2EF3D90D2D7B5A00008E00EE /* Release configuration for PBXNativeTarget "Random Game PickerTests" */,
 			);
 			defaultConfigurationName = Release;
 		};

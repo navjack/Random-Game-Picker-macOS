@@ -21,6 +21,20 @@
                ReferencedContainer = "container:Random Game Picker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2EF3D9062D7B5A00008E00EE"
+               BuildableName = "Random Game PickerTests.xctest"
+               BlueprintName = "Random Game PickerTests"
+               ReferencedContainer = "container:Random Game Picker.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -35,20 +49,9 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2EF3D81F2D7B4F3D008E00EE"
+               BlueprintIdentifier = "2EF3D9062D7B5A00008E00EE"
                BuildableName = "Random Game PickerTests.xctest"
                BlueprintName = "Random Game PickerTests"
-               ReferencedContainer = "container:Random Game Picker.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2EF3D8292D7B4F3D008E00EE"
-               BuildableName = "Random Game PickerUITests.xctest"
-               BlueprintName = "Random Game PickerUITests"
                ReferencedContainer = "container:Random Game Picker.xcodeproj">
             </BuildableReference>
          </TestableReference>
