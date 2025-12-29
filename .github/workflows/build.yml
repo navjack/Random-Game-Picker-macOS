@@ -1,0 +1,38 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [Main]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build app
+        run: |
+          xcodebuild \
+            -scheme "Random Game Picker" \
+            -configuration Release \
+            -derivedDataPath "${RUNNER_TEMP}/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package app
+        run: |
+          APP_PATH="${RUNNER_TEMP}/DerivedData/Build/Products/Release/Random Game Picker.app"
+          ZIP_PATH="${RUNNER_TEMP}/Random-Game-Picker-macOS.zip"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
+          echo "ZIP_PATH=$ZIP_PATH" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Random-Game-Picker-macOS
+          path: ${{ env.ZIP_PATH }}
