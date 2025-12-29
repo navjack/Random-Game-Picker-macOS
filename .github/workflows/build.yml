@@ -4,6 +4,10 @@ on:
   push:
     branches: [Main]
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to upload asset to (e.g. v1.26)"
+        required: false
   release:
     types: [published]
 
@@ -41,8 +45,13 @@ jobs:
           path: ${{ env.ZIP_PATH }}
 
       - name: Upload release asset
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || github.event.inputs.tag_name != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "$ZIP_PATH" --clobber
+          if [ "${{ github.event_name }}" = "release" ]; then
+            RELEASE_TAG="${{ github.event.release.tag_name }}"
+          else
+            RELEASE_TAG="${{ github.event.inputs.tag_name }}"
+          fi
+          gh release upload "$RELEASE_TAG" "$ZIP_PATH" --clobber
